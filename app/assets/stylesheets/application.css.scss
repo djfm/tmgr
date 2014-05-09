@@ -15,3 +15,13 @@
  */
 
 @import "bootstrap";
+
+a[ng-click] {
+	cursor: pointer;
+}
+
+div.string-form {
+	border: 1px solid #CCC;
+	padding: 5px;
+	margin-bottom: 5px;
+}

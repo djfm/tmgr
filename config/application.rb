@@ -21,5 +21,6 @@ module Tmgr
     # config.i18n.default_locale = :de
     config.action_mailer.default_url_options = { host: 'localhost:3000' }
     config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
+    config.autoload_paths += Dir["#{config.root}/lib"]
   end
 end
