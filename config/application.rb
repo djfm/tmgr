@@ -22,5 +22,6 @@ module Tmgr
     config.action_mailer.default_url_options = { host: 'localhost:3000' }
     config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
     config.autoload_paths += Dir["#{config.root}/lib"]
+    config.log_level = :warn
   end
 end

@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  path: MyString
+  segments: MyString
+  words: MyString
+
+two:
+  path: MyString
+  segments: MyString
+  words: MyString

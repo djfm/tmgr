@@ -10,10 +10,8 @@
   <table class="table table-striped table-bordered table-hover">
     <thead>
       <tr>
-            <th>Title</th>
-            <th>Deadline</th>
-            <th>Comments</th>
-            <th></th>
+        <th>Title</th>
+        <th>Deadline</th>
         <th></th>
         <th></th>
       </tr>
@@ -21,10 +19,8 @@
 
     <tbody>
       <%= content_tag_for(:tr, @projects) do |project| %>
-            <td><%= project.title %></td>
-            <td><%= project.deadline %></td>
-            <td><%= project.comments %></td>
-            <td><%= link_to 'Show', project %></td>
+        <td><%= project.title %></td>
+        <td><%= project.deadline %></td>
         <td><%= link_to 'Edit', edit_project_path(project) %></td>
         <td><%= link_to 'Destroy', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>

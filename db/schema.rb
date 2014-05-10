@@ -11,11 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140509130227) do
+ActiveRecord::Schema.define(version: 20140510155158) do
 
   create_table "languages", force: true do |t|
     t.string   "locale"
     t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "messages", force: true do |t|
+    t.string   "key"
+    t.string   "message"
+    t.text     "comments"
+    t.integer  "resource_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -47,6 +56,15 @@ ActiveRecord::Schema.define(version: 20140509130227) do
     t.integer  "user_id"
     t.integer  "resource_type_id"
     t.string   "title"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "source_files", force: true do |t|
+    t.string   "path"
+    t.string   "segments"
+    t.string   "words"
+    t.integer  "resource_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

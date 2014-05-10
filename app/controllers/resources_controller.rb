@@ -15,16 +15,28 @@ class ResourcesController < ApplicationController
   # GET /resources/new
   def new
     @resource = Resource.new
+    if project_id = params[:project_id]
+      @resource.project = Project.find(project_id)
+    end
   end
 
   # GET /resources/1/edit
   def edit
   end
 
+  def handle_extra_data
+    if params['messages']
+      @resource.raw_messages = @messages = params['messages'].sort.map do |k,v| v end
+      @resource.raw_file = params['text_file']
+    end
+  end
+
   # POST /resources
   # POST /resources.json
   def create
     @resource = Resource.new(resource_params)
+
+    handle_extra_data
 
     respond_to do |format|
       if @resource.save
@@ -40,6 +52,8 @@ class ResourcesController < ApplicationController
   # PATCH/PUT /resources/1
   # PATCH/PUT /resources/1.json
   def update
+    handle_extra_data
+
     respond_to do |format|
       if @resource.update(resource_params)
         format.html { redirect_to @resource, notice: 'Resource was successfully updated.' }
@@ -65,10 +79,13 @@ class ResourcesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_resource
       @resource = Resource.find(params[:id])
+      @messages = @resource.messages
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def resource_params
-      params.require(:resource).permit(:title)
+      res = params.require(:resource).permit(:title, :resource_type, :project_id)
+      res[:resource_type] = ResourceType.find_by_key(params[:resource][:resource_type])
+      res
     end
 end

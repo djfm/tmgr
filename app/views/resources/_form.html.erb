@@ -1,4 +1,4 @@
-<%= form_for(@resource, :html => { :class => "form-horizontal", 'ng-controller' => 'NewResourceCtrl' }) do |f| %>
+<%= form_for(@resource, :html => {:multipart => true, :class => 'form-horizontal', 'ng-controller' => 'NewResourceCtrl' }) do |f| %>
   <% if @resource.errors.any? %>
     <div class="alert alert-danger alert-dismissable">
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -13,15 +13,21 @@
   <% end %>
 
   <div class="form-group">
+    <%= f.label :project_id, :class => "col-sm-2 control-label" %>
+    <div class="col-sm-10">
+      <%= f.collection_select :project_id, Project.all, :id, :title, {:selected => @resource.project.try(:id)}, :class => "form-control" %>
+    </div>
+  </div>
+  <div class="form-group">
     <%= f.label :title, :class => "col-sm-2 control-label" %>
     <div class="col-sm-10">
       <%= f.text_field :title, :class => "form-control" %>
     </div>
   </div>
   <div class="form-group">
-    <%= f.label :type, :class => "col-sm-2 control-label" %>
+    <%= f.label :resource_type, :class => "col-sm-2 control-label" %>
     <div class="col-sm-10">
-      <%= f.select :type, ResourceType.all.map{|t| [t.name, t.key]}, {}, {:class => "form-control", 'ng-model' => 'type'} %>
+      <%= f.select :resource_type, ResourceType.all.map{|t| [t.name, t.key]}, {}, {:class => "form-control", 'ng-model' => 'type'} %>
     </div>
   </div>
 
@@ -29,39 +35,39 @@
     <div class="form-group">
       <%= label_tag :text_file, nil, :class => "col-sm-2 control-label" %>
       <div class="col-sm-10">
-        <input type="file" class="form-control">
+        <%= file_field_tag :text_file, :class => 'form-control' %>
       </div>
     </div>
   </div>
 
-  <div ng-if="type=='list_of_strings'">
+  <div ng-if="type=='list_of_messages'">
     <div class="row">
       <div class="col-sm-10 col-sm-offset-2">
-        <div class="string-form" ng-repeat="(s, string) in strings">
+        <div class="string-form" ng-repeat="(s, message) in messages">
           <div class="form-group">
-            <label for="string_{{s}}" class="col-sm-2 control-label">
-              String
+            <label for="message_{{s}}" class="col-sm-2 control-label">
+              Message
             </label>
             <div class="col-sm-9">
-              <input name="strings[{{s}}][string]" id="string_{{s}}" type="text" class="form-control" ng-model="string.string">
+              <input name="messages[{{s}}][message]" id="message_{{s}}" type="text" class="form-control" ng-model="message.message">
             </div>
             <div class="col-sm-1">
-              <button ng-click="strings.splice(s, 1)" type="button" class="btn btn-danger">X</button>
+              <button ng-click="messages.splice(s, 1)" type="button" class="btn btn-danger">X</button>
             </div>
           </div>
           <div class="form-group">
             <div class="col-sm-10 col-sm-offset-2">
-               <a ng-click="string.show_details = !string.show_details" ng-show="string.show_details">...less</a>
-               <a ng-click="string.show_details = !string.show_details" ng-show="!string.show_details">more...</a>
+               <a ng-click="message.show_details = !message.show_details" ng-show="message.show_details">...less</a>
+               <a ng-click="message.show_details = !message.show_details" ng-show="!message.show_details">more...</a>
             </div>
           </div>
-          <div ng-show="string.show_details">
+          <div ng-show="message.show_details">
             <div class="form-group">
               <label for="key_{{s}}" class="col-sm-2 control-label">
                 Key
               </label>
               <div class="col-sm-9">
-                <input name="strings[{{s}}][key]" id="key_{{s}}" type="text" class="form-control" ng-model="string.key">
+                <input name="messages[{{s}}][key]" id="key_{{s}}" type="text" class="form-control" ng-model="message.key">
               </div>
             </div>
             <div class="form-group">
@@ -69,13 +75,13 @@
                 Comments
               </label>
               <div class="col-sm-9">
-                <textarea name="strings[{{s}}][comments]" id="comments_{{s}}" class="form-control" ng-model="string.comments"></textarea>
+                <textarea name="messages[{{s}}][comments]" id="comments_{{s}}" class="form-control" ng-model="message.comments"></textarea>
               </div>
             </div>
           </div>
         </div>
         <div class="pull-right">
-          <button type="button" ng-click="strings.push({})" class="btn btn-default">+ string</button>
+          <button type="button" ng-click="addMessage()" class="btn btn-default">+ Message</button>
         </div>
       </div>
     </div>
@@ -90,7 +96,15 @@
 
 <script type="text/javascript">
   function NewResourceCtrl($scope) {
-    $scope.type = 'list_of_strings'
-    $scope.strings = [{}]
+
+    $scope.type = <%= (@resource.resource_type.try(:key) || 'text_file').to_json.html_safe %>;
+    $scope.messages = <%= (@messages || [{}]).to_json.html_safe %>;
+    
+    $scope.addMessage = function () {
+      $scope.messages.push({});
+    };
+
+    console.log($scope.messages)
+
   };
 </script>

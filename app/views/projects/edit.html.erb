@@ -13,4 +13,4 @@
 <%= render 'form' %>
 
 <h1>Resources</h1>
-<%= link_to "Add resource to project", new_resource_path() %>
+<%= link_to "Add resource to project", new_resource_path(:project_id => @project) %>
