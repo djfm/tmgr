@@ -43,45 +43,56 @@
   <div ng-if="type=='list_of_messages'">
     <div class="row">
       <div class="col-sm-10 col-sm-offset-2">
-        <div class="string-form" ng-repeat="(s, message) in messages">
-          <div class="form-group">
-            <label for="message_{{s}}" class="col-sm-2 control-label">
-              Message
-            </label>
-            <div class="col-sm-9">
-              <input name="messages[{{s}}][message]" id="message_{{s}}" type="text" class="form-control" ng-model="message.message">
-            </div>
-            <div class="col-sm-1">
-              <button ng-click="messages.splice(s, 1)" type="button" class="btn btn-danger">X</button>
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="col-sm-10 col-sm-offset-2">
-               <a ng-click="message.show_details = !message.show_details" ng-show="message.show_details">...less</a>
-               <a ng-click="message.show_details = !message.show_details" ng-show="!message.show_details">more...</a>
-            </div>
-          </div>
-          <div ng-show="message.show_details">
-            <div class="form-group">
-              <label for="key_{{s}}" class="col-sm-2 control-label">
-                Key
-              </label>
-              <div class="col-sm-9">
-                <input name="messages[{{s}}][key]" id="key_{{s}}" type="text" class="form-control" ng-model="message.key">
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="comments_{{s}}" class="col-sm-2 control-label">
-                Comments
-              </label>
-              <div class="col-sm-9">
-                <textarea name="messages[{{s}}][comments]" id="comments_{{s}}" class="form-control" ng-model="message.comments"></textarea>
-              </div>
-            </div>
-          </div>
+        <div class="alert alert-info" fm-on-drop="dropped($event)">
+          <p>You can either drop <strong>.xlsx</strong> files in this box or use the button below to add messages manually.</p>
+          <br>Excel files must obey the following convention:
+          <ul>
+            <li>Messages are on the first sheet</li>
+            <li>Exactly one header row, with 3 columns called <strong>exactly</strong> 'key', 'message', and 'comments'</li>
+            <li>Headers start at cell A1 (i.e. no blanks at the top or at the left of the document)</li>
+          </ul>
         </div>
-        <div class="pull-right">
-          <button type="button" ng-click="addMessage()" class="btn btn-default">+ Message</button>
+        <div class="string-form-wrapper">
+          <div class="string-form" ng-repeat="(s, message) in messages">
+            <div class="form-group">
+              <label for="message_{{s}}" class="col-sm-2 control-label">
+                Message
+              </label>
+              <div class="col-sm-9">
+                <input name="messages[{{s}}][message]" id="message_{{s}}" type="text" class="form-control" ng-model="message.message">
+              </div>
+              <div class="col-sm-1">
+                <button ng-click="messages.splice(s, 1)" type="button" class="btn btn-danger">X</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-10 col-sm-offset-2">
+                 <a ng-click="message.show_details = !message.show_details" ng-show="message.show_details">...less</a>
+                 <a ng-click="message.show_details = !message.show_details" ng-show="!message.show_details">more...</a>
+              </div>
+            </div>
+            <div ng-show="message.show_details">
+              <div class="form-group">
+                <label for="key_{{s}}" class="col-sm-2 control-label">
+                  Key
+                </label>
+                <div class="col-sm-9">
+                  <input name="messages[{{s}}][key]" id="key_{{s}}" type="text" class="form-control" ng-model="message.key">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="comments_{{s}}" class="col-sm-2 control-label">
+                  Comments
+                </label>
+                <div class="col-sm-9">
+                  <textarea name="messages[{{s}}][comments]" id="comments_{{s}}" class="form-control" ng-model="message.comments"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pull-right">
+            <button type="button" ng-click="addMessage()" class="btn btn-default">+ Message</button>
+          </div>
         </div>
       </div>
     </div>
@@ -94,17 +105,52 @@
   </div>
 <% end %>
 
+<%= javascript_include_tag "lib/xlsx.core.min.js" %>
+
 <script type="text/javascript">
   function NewResourceCtrl($scope) {
 
     $scope.type = <%= (@resource.resource_type.try(:key) || 'text_file').to_json.html_safe %>;
-    $scope.messages = <%= (@messages || [{}]).to_json.html_safe %>;
+    $scope.messages = <%= (@messages || []).to_json.html_safe %>;
     
     $scope.addMessage = function () {
       $scope.messages.push({});
     };
 
-    console.log($scope.messages)
+    $scope.dropped = function (event) {
+      var files = event.originalEvent.dataTransfer.files;
 
+      if (files) {
+        for (var i=0; i < files.length; i++) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            try {
+              var wb = XLSX.read(e.target.result, {type: 'binary'});
+              $scope.processExcel(wb);
+            }
+            catch (err) {
+              $scope.unsupportedFile();
+            }
+
+          };
+          reader.readAsBinaryString(files.item(i));
+        }
+      }
+
+    };
+
+    $scope.unsupportedFile = function () {
+
+    };
+
+    $scope.processExcel = function (wb) {
+      var sheet = wb.Sheets[wb.SheetNames[0]];
+      var rows = XLSX.utils.sheet_to_row_object_array(sheet);
+      $scope.messages = $scope.messages.concat(rows);
+      if(!$scope.$$phase) {
+        $scope.$digest();
+      }
+    };
   };
+
 </script>

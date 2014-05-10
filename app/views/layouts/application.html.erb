@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="app">
 <head>
   <meta charset="utf-8">
   <title>TMGR: Translations Management GRRR</title>
@@ -33,6 +33,7 @@
         <ul class="nav navbar-nav">
           <li><%= link_to "Projects", projects_path %></li>
           <li><%= link_to "Resources", resources_path %></li>
+          <li><%= link_to "Languages", languages_path %></li>
         </ul>
       </div>
     </div>
@@ -47,5 +48,26 @@
 
     <%= yield %>
   </div>
+
+  <script type="text/javascript">
+    var app = angular.module('app', []);
+
+    app.directive('fmOnDrop', function () {
+      return {
+        restrict: "A",
+        link: function (scope, element, attributes, ctrl) {
+          element.bind("dragover", function(event){
+            event.preventDefault();
+          });
+          element.bind('drop', function (event) {
+            event.preventDefault();
+            scope.$eval(attributes['fmOnDrop'], {'$event': event});
+          });
+        }
+      }
+    });
+
+  </script>
+
 </body>
 </html>
