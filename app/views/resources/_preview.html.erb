@@ -5,13 +5,13 @@
 		</div>
 		<div class="col-sm-3">
 			<% if @resource.isSourceFile %>
-				<span class="label label-default">File:</span> <%= @resource.source_file.original_filename %>
+				<span class="label label-default">File:</span> <%= @resource.source_file.try(:original_filename) || '[ERROR]' %>
 			<% else %>
 				<span class="label label-default">List of strings:</span> <%= @resource.messages.count %>
 			<% end %>
 		</div>
 		<div class="col-sm-3">
-			<% if @resource.comments %>
+			<% if @resource.comments.to_s.strip != '' %>
 				<pre><%= @resource.comments %></pre>
 			<% else %>
 				&nbsp;-

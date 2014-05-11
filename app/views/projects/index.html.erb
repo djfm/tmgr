@@ -12,6 +12,7 @@
       <tr>
         <th>Title</th>
         <th>Deadline</th>
+        <th>Status</th>
         <th>Person In Charge</th>
         <th>Comments</th>
         <th></th>
@@ -22,10 +23,13 @@
       <%= content_tag_for(:tr, @projects) do |project| %>
         <td><%= link_to project.title, edit_project_path(project) %></td>
         <td><%= project.deadline %></td>
+        <td><span class="label label-primary"><%= project.project_status.name %></span></td>
         <td><%= mail_to project.user.email  %></td>
         <td>
-          <% if project.comments %>
+          <% if project.comments.to_s.strip != '' %>
             <pre><%= project.comments %></pre>
+          <% else %>
+            &nbsp;-
           <% end %>
         </td>
         <td>

@@ -1,5 +1,6 @@
 class ResourcesController < ApplicationController
   before_action :set_resource, only: [:show, :edit, :update, :destroy]
+  before_action :check_access, only: [:edit, :update, :destroy]
 
   # GET /resources
   # GET /resources.json
@@ -57,6 +58,11 @@ class ResourcesController < ApplicationController
   def update
     handle_extra_data
 
+    # don't let people add stuff to a locked project
+    if (new_project_id = resource_params[:project_id]) and new_project_id != @resource.project.id
+      return unless check_access_for Project.find(new_project_id)
+    end
+
     respond_to do |format|
       if @resource.update(resource_params)
         format.html { redirect_to edit_project_path(@resource.project), notice: 'Resource was successfully updated.' }
@@ -90,5 +96,26 @@ class ResourcesController < ApplicationController
       res = params.require(:resource).permit(:title, :resource_type, :project_id, :comments)
       res[:resource_type] = ResourceType.find_by_key(params[:resource][:resource_type])
       return res
+    end
+
+    def check_access_for project
+      if current_user.id != project.user.id and !current_user.admin
+        case project.project_status.key
+        when 'locked'
+          redirect_to projects_url, :alert => 'Target project is locked, only its owner or an admin can change it!'
+          return false
+        when 'launched'
+          redirect_to projects_url, :alert => 'Target project is already launched, too late.'
+          return false
+        when 'completed'
+          redirect_to projects_url, :alert => 'Target project is already completed!'
+          return false
+        end
+      end
+      return true
+    end
+
+    def check_access
+      check_access_for @resource.project
     end
 end

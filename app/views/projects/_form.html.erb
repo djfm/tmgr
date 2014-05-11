@@ -24,6 +24,14 @@
       <%= f.datetime_select :deadline, :class => "form-control" %>
     </div>
   </div>
+  <% if @available_statuses %>
+    <div class="form-group">
+      <%= f.label :project_status_id, :class => "col-sm-2 control-label" %>
+      <div class="col-sm-10">
+        <%= f.select :project_status_id, @available_statuses, {}, :class => "form-control" %>
+      </div>
+    </div>
+  <% end %>
   <div class="form-group">
     <%= f.label :comments, :class => "col-sm-2 control-label" %>
     <div class="col-sm-10">
