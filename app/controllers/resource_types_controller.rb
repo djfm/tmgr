@@ -1,6 +1,7 @@
 class ResourceTypesController < ApplicationController
   before_action :set_resource_type, only: [:show, :edit, :update, :destroy]
-
+  before_filter :check_admin
+  
   # GET /resource_types
   # GET /resource_types.json
   def index

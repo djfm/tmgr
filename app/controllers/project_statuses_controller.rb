@@ -1,6 +1,7 @@
 class ProjectStatusesController < ApplicationController
   before_action :set_project_status, only: [:show, :edit, :update, :destroy]
-
+  before_filter :check_admin
+  
   # GET /project_statuses
   # GET /project_statuses.json
   def index
