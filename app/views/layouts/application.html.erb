@@ -16,6 +16,10 @@
   <%= javascript_include_tag "application" %>
   <%= javascript_include_tag "https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.7/angular.min.js" %>
   <%= csrf_meta_tags %>
+
+  <script type="text/javascript">
+    var app = angular.module('app', []);
+  </script>
 </head>
 <body>
   <div class="navbar navbar-inverse navbar-fixed-top">
@@ -50,8 +54,6 @@
   </div>
 
   <script type="text/javascript">
-    var app = angular.module('app', []);
-
     app.directive('fmOnDrop', function () {
       return {
         restrict: "A",

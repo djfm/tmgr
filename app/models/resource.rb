@@ -8,8 +8,9 @@ class Resource < ActiveRecord::Base
 	belongs_to :project
 	has_many :messages, :dependent => :destroy
 	has_one :source_file, :dependent => :destroy
+	has_and_belongs_to_many :languages
 
-	attr_accessor :raw_messages, :raw_file
+	attr_accessor :raw_messages, :raw_file, :raw_languages
 
 	def resource_type_is_ok
 		if !resource_type
@@ -62,6 +63,12 @@ class Resource < ActiveRecord::Base
 
 	def save
 		if ok = super
+
+			languages.clear
+			raw_languages.each do |id|
+				languages << Language.find(id)
+			end
+
 			if resource_type.key == 'list_of_messages' and @raw_messages
 
 				source_file.try :destroy

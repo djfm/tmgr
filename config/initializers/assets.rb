@@ -1,1 +1,1 @@
-Rails.application.config.assets.precompile += %w( lib/xlsx.core.min.js )
+Rails.application.config.assets.precompile += %w( lib/xlsx.core.min.js lib/angular-draganddrop.js )

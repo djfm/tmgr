@@ -27,8 +27,11 @@ class ResourcesController < ApplicationController
   def handle_extra_data
     if params['messages']
       @resource.raw_messages = @messages = params['messages'].sort.map do |k,v| v end
+    end
+    if params['text_file']
       @resource.raw_file = params['text_file']
     end
+    @resource.raw_languages = params[:languages]
   end
 
   # POST /resources
@@ -86,6 +89,6 @@ class ResourcesController < ApplicationController
     def resource_params
       res = params.require(:resource).permit(:title, :resource_type, :project_id)
       res[:resource_type] = ResourceType.find_by_key(params[:resource][:resource_type])
-      res
+      return res
     end
 end
