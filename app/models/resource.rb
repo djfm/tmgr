@@ -9,6 +9,7 @@ class Resource < ActiveRecord::Base
 	has_many :messages, :dependent => :destroy
 	has_one :source_file, :dependent => :destroy
 	has_and_belongs_to_many :languages
+	has_many :assignments, :dependent => :destroy
 
 	attr_accessor :raw_messages, :raw_file, :raw_languages
 
@@ -95,6 +96,10 @@ class Resource < ActiveRecord::Base
 		end
 
 		return ok
+	end
+
+	def assignment_for_language language
+		assignments.find_by_language_id(language.is_a?(Integer) ? language : language.id)
 	end
 
 	def isSourceFile

@@ -1,6 +1,6 @@
 <div class="resource">
 	<div class="row">
-		<div class="col-sm-3">
+		<div class="col-sm-2">
 			<%= link_to @resource.title, edit_resource_path(@resource) %>
 		</div>
 		<div class="col-sm-3">
@@ -17,9 +17,30 @@
 				&nbsp;-
 			<% end %>
 		</div>
-		<div class="col-sm-2">
-			<% @resource.languages.each do |l| %>
-				<span class="label label-primary"><%= l.name %></span>
+		<div class="col-sm-3">
+			<% if not current_user.admin %>
+				<% @resource.languages.each do |l| %>
+					<span class="label label-primary"><%= l.name %></span>
+				<% end %>
+			<% else %>
+				<div class="form-horizontal">
+					<% @resource.languages.each do |l| %>
+						<div class="form-group">
+							<div class="col-sm-3">
+								<span class="label label-primary"><%= l.name %></span>
+							</div>
+							<div class="col-sm-9">
+								<%= select_tag 	"assign_resource_#{@resource.id}_#{l.id}",
+												options_for_select([['(unassigned)', -1]] +  l.translators.map{|t| [t.email, t.id]}),
+												:class => 'form-control',
+												'ng-model' => "assignments[[#{@resource.id},#{l.id}]]",
+												'ng-change' => "reassign(#{@resource.id}, #{l.id})",
+												'ng-init' => "assignments[[#{@resource.id},#{l.id}]] = #{(@resource.assignment_for_language(l).try(:translator).try(:id) || -1).to_json}"
+								%>
+							</div>
+						</div>
+					<% end %>
+				</div>
 			<% end %>
 		</div>
 		<div class="col-sm-1">

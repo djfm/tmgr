@@ -84,6 +84,22 @@ class ResourcesController < ApplicationController
     end
   end
 
+  # POST /reassign
+  def reassign
+    @resource = Resource.find(params[:resource_id])
+    if @resource
+      @resource.assignment_for_language(params[:language_id]).try :destroy
+      if params[:language_id].to_i >= 0
+        success = !!@resource.assignments.create(params.permit(:resource_id, :language_id, :translator_id))
+      else
+        success = true
+      end
+      render :json => {success: success} 
+    else
+      render :json => {success: false}
+    end
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_resource
@@ -107,9 +123,16 @@ class ResourcesController < ApplicationController
         when 'launched'
           redirect_to projects_url, :alert => 'Target project is already launched, too late.'
           return false
+        when 'sent'
+          redirect_to projects_url, :alert => 'Target project was already sent to translators, too late.'
+          return false
         when 'completed'
           redirect_to projects_url, :alert => 'Target project is already completed!'
           return false
+        end
+      elsif current_user.id == project.user.id and !current_user.admin
+        unless ['default', 'locked'].include? project.project_status.key
+          redirect_to projects_url, :alert => 'Project cannot be edited because it was already launched.'
         end
       end
       return true

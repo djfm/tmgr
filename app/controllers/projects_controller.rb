@@ -43,7 +43,13 @@ class ProjectsController < ApplicationController
   def update
     respond_to do |format|
       if @project.update(project_params)
-        format.html { redirect_to edit_project_path(@project), notice: 'Project was successfully updated.' }
+        format.html do
+          if @project.project_status.key == 'launched'
+            redirect_to projects_path, notice: 'Project is launched, sit tight.'
+          else 
+            redirect_to edit_project_path(@project), notice: 'Project was successfully updated.'
+          end
+        end
         format.json { render :show, status: :ok, location: @project }
       else
         format.html { render :edit }
@@ -77,7 +83,7 @@ class ProjectsController < ApplicationController
       elsif current == 'locked'
         ['default', 'locked', 'launched']
       elsif current_user.admin
-        ['default', 'locked', 'launched', 'completed']
+        ['default', 'locked', 'launched', 'sent', 'completed']
       else
         []
       end
@@ -108,8 +114,14 @@ class ProjectsController < ApplicationController
           redirect_to projects_url, :alert => 'Project is locked, only its owner or an admin can change it!'
         when 'launched'
           redirect_to projects_url, :alert => 'Project is already launched, too late.'
+        when 'sent'
+          redirect_to projects_url, :alert => 'Project was already sent to translators, too late.'
         when 'completed'
           redirect_to projects_url, :alert => 'Project is already completed!'
+        end
+      elsif current_user.id == @project.user.id and !current_user.admin
+        unless ['default', 'locked'].include? @project.project_status.key
+          redirect_to projects_url, :alert => 'Project cannot be edited because it was already launched.'
         end
       end
     end

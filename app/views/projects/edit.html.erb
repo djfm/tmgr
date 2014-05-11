@@ -19,6 +19,23 @@
 <br>
 <br>
 
-<% @project.resources.each do |resource| %>
-	<%= @resource = resource and render 'resources/preview' %>
-<% end %>
+<div ng-controller='AssignmentsCtrl'>
+  <% @project.resources.each do |resource| %>
+  	<%= @resource = resource and render 'resources/preview' %>
+  <% end %>
+</div>
+
+<script type="text/javascript">
+  app.controller('AssignmentsCtrl', function ($scope, $http) {
+    $scope.assignments = {};
+
+    $scope.reassign = function (resource_id, language_id) {
+      $http.post('<%= reassign_path %>', {
+        resource_id: resource_id,
+        language_id: language_id,
+        translator_id: $scope.assignments[[resource_id, language_id]]
+      })
+    };
+
+  });
+</script>
