@@ -12,17 +12,27 @@
       <tr>
         <th>Title</th>
         <th>Deadline</th>
-        <th></th>
+        <th>Person In Charge</th>
+        <th>Comments</th>
         <th></th>
       </tr>
     </thead>
 
     <tbody>
       <%= content_tag_for(:tr, @projects) do |project| %>
-        <td><%= project.title %></td>
+        <td><%= link_to project.title, edit_project_path(project) %></td>
         <td><%= project.deadline %></td>
-        <td><%= link_to 'Edit', edit_project_path(project) %></td>
-        <td><%= link_to 'Destroy', project, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= mail_to project.user.email  %></td>
+        <td>
+          <% if project.comments %>
+            <pre><%= project.comments %></pre>
+          <% end %>
+        </td>
+        <td>
+          <div class="pull-right">
+            <%= button_to 'X', project, method: :delete, data: { confirm: 'Are you sure?' }, :class => 'btn btn-danger btn-xs' %>
+          </div>
+        </td>
       <% end %>
     </tbody>
   </table>

@@ -23,5 +23,13 @@ module Tmgr
     config.assets.precompile += %w(*.png *.jpg *.jpeg *.gif)
     config.autoload_paths += Dir["#{config.root}/lib"]
     config.log_level = :warn
+
+    config.to_prepare do
+        Devise::SessionsController.layout "devise"
+        Devise::RegistrationsController.layout proc{ |controller| user_signed_in? ? "application"   : "devise" }
+        Devise::ConfirmationsController.layout "devise"
+        Devise::UnlocksController.layout "devise"            
+        Devise::PasswordsController.layout "devise"        
+    end
   end
 end

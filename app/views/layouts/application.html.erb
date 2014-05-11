@@ -36,8 +36,10 @@
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
           <li><%= link_to "Projects", projects_path %></li>
-          <li><%= link_to "Resources", resources_path %></li>
           <li><%= link_to "Languages", languages_path %></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><p class="navbar-text">Hi, <%= current_user.email %> (<%= link_to 'sign out', destroy_user_session_path %>)</p></li>
         </ul>
       </div>
     </div>

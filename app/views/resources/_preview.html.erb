@@ -1,0 +1,31 @@
+<div class="resource">
+	<div class="row">
+		<div class="col-sm-3">
+			<%= link_to @resource.title, edit_resource_path(@resource) %>
+		</div>
+		<div class="col-sm-3">
+			<% if @resource.isSourceFile %>
+				<span class="label label-default">File:</span> <%= @resource.source_file.original_filename %>
+			<% else %>
+				<span class="label label-default">List of strings:</span> <%= @resource.messages.count %>
+			<% end %>
+		</div>
+		<div class="col-sm-3">
+			<% if @resource.comments %>
+				<pre><%= @resource.comments %></pre>
+			<% else %>
+				&nbsp;-
+			<% end %>
+		</div>
+		<div class="col-sm-2">
+			<% @resource.languages.each do |l| %>
+				<span class="label label-primary"><%= l.name %></span>
+			<% end %>
+		</div>
+		<div class="col-sm-1">
+			<div class="pull-right">
+				<%= button_to 'X', @resource, method: :delete, data: { confirm: 'Are you sure you want to delete this resource?' }, :class => 'btn btn-danger btn-xs' %>	
+			</div>
+		</div>
+	</div>
+</div>

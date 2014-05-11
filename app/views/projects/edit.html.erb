@@ -7,10 +7,18 @@
     <span class="glyphicon glyphicon-info-sign"></span>
     Show
   <% end %>
-  <h1>Editing project</h1>
+  <h1>General Project Info</h1>
 </div>
 
 <%= render 'form' %>
 
-<h1>Resources</h1>
-<%= link_to "Add resource to project", new_resource_path(:project_id => @project) %>
+<h1>Project Resources</h1>
+
+<%= link_to "Add resource to project", new_resource_path(:project_id => @project), :class => 'btn btn-default' %>
+
+<br>
+<br>
+
+<% @project.resources.each do |resource| %>
+	<%= @resource = resource and render 'resources/preview' %>
+<% end %>

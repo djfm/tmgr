@@ -7,6 +7,7 @@ class SourceFile < ActiveRecord::Base
 
 	def store_on_disk uf
 		self.path = "#{ROOT}/#{id}#{File.extname uf.original_filename}"
+		self.original_filename = uf.original_filename
 		save
 		FileUtils.mv uf.path, absolute_path
 	end

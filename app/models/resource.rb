@@ -96,4 +96,8 @@ class Resource < ActiveRecord::Base
 
 		return ok
 	end
+
+	def isSourceFile
+		resource_type.try(:key) == 'text_file'
+	end
 end
