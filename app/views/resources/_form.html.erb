@@ -30,7 +30,8 @@
       <%= select_tag  :languages,
                       options_for_select(Language.all.map {|l| [l.name, l.id]}, @resource.languages.map(&:id)),
                       :class => "form-control",
-                      :multiple => true 
+                      :multiple => true,
+                      :required => true 
       %>
     </div>
   </div>

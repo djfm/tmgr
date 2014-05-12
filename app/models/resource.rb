@@ -64,7 +64,6 @@ class Resource < ActiveRecord::Base
 
 	def save
 		if ok = super
-
 			languages.clear
 			raw_languages.each do |id|
 				languages << Language.find(id)
@@ -92,6 +91,14 @@ class Resource < ActiveRecord::Base
 					source_file.store_on_disk raw_file
 				end
 
+			end
+
+			languages.each do |l|
+				unless assignment_for_language l
+					if t = l.translators.first
+						assignments.create :language_id => l.id, :translator_id => t.id
+					end
+				end
 			end
 		end
 

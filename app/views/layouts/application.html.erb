@@ -9,7 +9,7 @@
 
   <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!--[if lt IE 9]>
-    <%= javascript_include_tag "https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js", "https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js" %>
+  <%= javascript_include_tag "https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js", "https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js" %>
   <![endif]-->
 
   <%= stylesheet_link_tag    "application", media: "all" %>
@@ -18,7 +18,7 @@
   <%= csrf_meta_tags %>
 
   <script type="text/javascript">
-    var app = angular.module('app', []);
+  var app = angular.module('app', []);
   </script>
 </head>
 <body>
@@ -43,6 +43,7 @@
       </div>
     </div>
   </div>
+
   <div class="container">
     <% flash.each do |name, msg| %>
       <%= content_tag :div, :class => "alert alert-#{ name == 'alert' ? "danger" : "success" } alert-dismissable" do %>
@@ -50,53 +51,81 @@
         <%= msg %>
       <% end %>
     <% end %>
-    <div ng-repeat="(name, msg) in flash" class="alert alert-{{name == 'alert' ? 'danger' : 'success'}} alert-dismissable">
-      <button ng-click="unflash(msg, name)" data-dismiss="alert" type="button" class="close" aria-hidden="true">&times;</button>
-      {{msg}}
+    
+    <div id="ng-flash">
+      <div ng-repeat="(i, f) in flash_messages.list" class="alert alert-{{f.type=='alert' ? 'danger' : 'success'}}">
+        <button ng-click="unflash(f.id)" type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        {{f.message}}
+      </div>
     </div>
-
-    <%= yield %>
+  
+    <div id="main">
+      <%= yield %>
+    </div>
   </div>
 
   <script type="text/javascript">
-    app.directive('fmOnDrop', function () {
-      return {
-        restrict: "A",
-        link: function (scope, element, attributes, ctrl) {
-          element.bind("dragover", function(event){
-            event.preventDefault();
-          });
-          element.bind('drop', function (event) {
-            event.preventDefault();
-            scope.$eval(attributes['fmOnDrop'], {'$event': event});
-          });
-        }
+  app.directive('fmOnDrop', function () {
+    return {
+      restrict: "A",
+      link: function (scope, element, attributes, ctrl) {
+        element.bind("dragover", function(event){
+          event.preventDefault();
+        });
+        element.bind('drop', function (event) {
+          event.preventDefault();
+          scope.$eval(attributes['fmOnDrop'], {'$event': event});
+        });
       }
+    }
+  });
+
+  app.run(function ($rootScope) {
+
+    $rootScope.flash_messages = new (function() {
+      var id = 0;
+      this.list = [];
+
+      this.push = function (message) {
+        id += 1;
+        message.id = id;
+        this.list.push(message);
+        return id;
+      };
+
+      this.remove = function (id) {
+        for (var i = 0; i < this.list.length; i++)
+        {
+          if (this.list[i].id == id) {
+            this.list.splice(i, 1);
+            break;
+          }
+        }
+      };
     });
 
-    app.factory('fmFlash', function ($rootScope) {
+    $rootScope.flash = function (message, type) {
+      type = type || 'notice';
+      var id = $rootScope.flash_messages.push({
+        message: message,
+        type: type
+      });
 
-      if (!$rootScope.flash) {
-        $rootScope.flash = {};
-      }
-
-      return {
-        flash: function (message, type) {
-          $rootScope.flash[type || 'notice'] = message;
-        },
-        unflash: function (message, type) {
-          for (var i in $rootScope.flash[type])
-          {
-            if ($rootScope.flash[type] == message) {
-              delete $rootScope.flash[type][i];
-              break;
-            }
+      if (type === 'notice') {
+        window.setTimeout(function() {
+          $rootScope.flash_messages.remove(id);
+          if (!$rootScope.$$phase) {
+            $rootScope.$apply();
           }
-          console.log($rootScope.flash);
-        }
+        }, 1000);
       }
-    })
 
+    };
+
+    $rootScope.unflash = function (id) {
+      $rootScope.flash_messages.remove(id);
+    };
+  });
   </script>
 
 </body>

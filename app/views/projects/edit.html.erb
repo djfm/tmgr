@@ -26,11 +26,8 @@
 </div>
 
 <script type="text/javascript">
-  app.controller('AssignmentsCtrl', function ($scope, $http, fmFlash) {
+  app.controller('AssignmentsCtrl', function ($scope, $http) {
     $scope.assignments = {};
-
-    $scope.unflash = fmFlash.unflash;
-    fmFlash.flash("bob");
 
     $scope.reassign = function (resource_id, language_id) {
 
@@ -38,7 +35,14 @@
         resource_id: resource_id,
         language_id: language_id,
         translator_id: $scope.assignments[[resource_id, language_id]]
-      })
+      }).then(function (resp) {
+        if (resp.data.success) {
+          $scope.flash("Assigned successfully!");
+        }
+        else {
+          $scope.flash("Could not assign!", "alert");
+        }
+      });
     };
 
   });
