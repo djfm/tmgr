@@ -10,22 +10,18 @@
   <table class="table table-striped table-bordered table-hover">
     <thead>
       <tr>
-            <th>Email</th>
-            <th>Firstname</th>
-            <th>Lastname</th>
-            <th></th>
-        <th></th>
+        <th>Email</th>
+        <th>Firstname</th>
+        <th>Lastname</th>
         <th></th>
       </tr>
     </thead>
 
     <tbody>
       <%= content_tag_for(:tr, @translators) do |translator| %>
-            <td><%= translator.email %></td>
-            <td><%= translator.firstname %></td>
-            <td><%= translator.lastname %></td>
-            <td><%= link_to 'Show', translator %></td>
-        <td><%= link_to 'Edit', edit_translator_path(translator) %></td>
+        <td><%= link_to translator.email, translator %></td>
+        <td><%= translator.firstname %></td>
+        <td><%= translator.lastname %></td>
         <td><%= link_to 'Destroy', translator, method: :delete, data: { confirm: 'Are you sure?' } %></td>
       <% end %>
     </tbody>

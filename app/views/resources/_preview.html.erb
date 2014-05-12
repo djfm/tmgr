@@ -18,32 +18,34 @@
 			<% end %>
 		</div>
 		<div class="col-sm-3">
-			<% if not current_user.admin %>
-				<% @resource.languages.each do |l| %>
-					<span class="label label-primary"><%= l.name %></span>
-				<% end %>
-			<% else %>
-				<div class="form-horizontal">
+			<% if defined? show_languages and show_languages %>
+				<% if not current_user.admin %>
 					<% @resource.languages.each do |l| %>
-						<div class="form-group">
-							<%= label_tag "assign_resource_#{@resource.id}_#{l.id}", l.name, :class => 'col-sm-3 control-label' %>
-							<div class="col-sm-9">
-								<%= select_tag 	"assign_resource_#{@resource.id}_#{l.id}",
-												options_for_select([['(unassigned)', -1]] +  l.translators.map{|t| [t.email.split('@')[0], t.id]}),
-												:class => 'form-control',
-												'ng-model' => "assignments[[#{@resource.id},#{l.id}]]",
-												'ng-change' => "reassign(#{@resource.id}, #{l.id})",
-												'ng-init' => "assignments[[#{@resource.id},#{l.id}]] = #{(@resource.assignment_for_language(l).try(:translator).try(:id) || -1).to_json}"
-								%>
-							</div>
-						</div>
+						<span class="label label-primary"><%= l.name %></span>
 					<% end %>
-				</div>
+				<% else %>
+					<div class="form-horizontal">
+						<% @resource.languages.each do |l| %>
+							<div class="form-group">
+								<%= label_tag "assign_resource_#{@resource.id}_#{l.id}", l.name, :class => 'col-sm-3 control-label' %>
+								<div class="col-sm-9">
+									<%= select_tag 	"assign_resource_#{@resource.id}_#{l.id}",
+													options_for_select([['(unassigned)', -1]] +  l.translators.map{|t| [t.email.split('@')[0], t.id]}),
+													:class => 'form-control',
+													'ng-model' => "assignments[[#{@resource.id},#{l.id}]]",
+													'ng-change' => "reassign(#{@resource.id}, #{l.id})",
+													'ng-init' => "assignments[[#{@resource.id},#{l.id}]] = #{(@resource.assignment_for_language(l).try(:translator).try(:id) || -1).to_json}"
+									%>
+								</div>
+							</div>
+						<% end %>
+					</div>
+				<% end %>
 			<% end %>
 		</div>
 		<div class="col-sm-1">
 			<div class="pull-right">
-				<%= button_to 'X', @resource, method: :delete, data: { confirm: 'Are you sure you want to delete this resource?' }, :class => 'btn btn-danger btn-xs' %>	
+				<%= button_to 'X', @resource, method: :delete, data: { confirm: 'Are you sure you want to delete this resource?' }, :class => 'btn btn-danger btn-xs' %>
 			</div>
 		</div>
 	</div>

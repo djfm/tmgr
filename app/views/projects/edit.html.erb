@@ -21,7 +21,7 @@
 
 <div ng-controller='AssignmentsCtrl'>
   <% @project.resources.each do |resource| %>
-  	<%= @resource = resource and render 'resources/preview' %>
+  	<%= @resource = resource and render 'resources/preview', show_languages: true %>
   <% end %>
 </div>
 
@@ -37,7 +37,7 @@
         translator_id: $scope.assignments[[resource_id, language_id]]
       }).then(function (resp) {
         if (resp.data.success) {
-          $scope.flash("Assigned successfully!");
+          $scope.flash("Reassigned successfully!");
         }
         else {
           $scope.flash("Could not assign!", "alert");
