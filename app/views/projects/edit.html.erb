@@ -26,10 +26,14 @@
 </div>
 
 <script type="text/javascript">
-  app.controller('AssignmentsCtrl', function ($scope, $http) {
+  app.controller('AssignmentsCtrl', function ($scope, $http, fmFlash) {
     $scope.assignments = {};
 
+    $scope.unflash = fmFlash.unflash;
+    fmFlash.flash("bob");
+
     $scope.reassign = function (resource_id, language_id) {
+
       $http.post('<%= reassign_path %>', {
         resource_id: resource_id,
         language_id: language_id,

@@ -50,6 +50,10 @@
         <%= msg %>
       <% end %>
     <% end %>
+    <div ng-repeat="(name, msg) in flash" class="alert alert-{{name == 'alert' ? 'danger' : 'success'}} alert-dismissable">
+      <button ng-click="unflash(msg, name)" data-dismiss="alert" type="button" class="close" aria-hidden="true">&times;</button>
+      {{msg}}
+    </div>
 
     <%= yield %>
   </div>
@@ -69,6 +73,29 @@
         }
       }
     });
+
+    app.factory('fmFlash', function ($rootScope) {
+
+      if (!$rootScope.flash) {
+        $rootScope.flash = {};
+      }
+
+      return {
+        flash: function (message, type) {
+          $rootScope.flash[type || 'notice'] = message;
+        },
+        unflash: function (message, type) {
+          for (var i in $rootScope.flash[type])
+          {
+            if ($rootScope.flash[type] == message) {
+              delete $rootScope.flash[type][i];
+              break;
+            }
+          }
+          console.log($rootScope.flash);
+        }
+      }
+    })
 
   </script>
 

@@ -26,12 +26,10 @@
 				<div class="form-horizontal">
 					<% @resource.languages.each do |l| %>
 						<div class="form-group">
-							<div class="col-sm-3">
-								<span class="label label-primary"><%= l.name %></span>
-							</div>
+							<%= label_tag "assign_resource_#{@resource.id}_#{l.id}", l.name, :class => 'col-sm-3 control-label' %>
 							<div class="col-sm-9">
 								<%= select_tag 	"assign_resource_#{@resource.id}_#{l.id}",
-												options_for_select([['(unassigned)', -1]] +  l.translators.map{|t| [t.email, t.id]}),
+												options_for_select([['(unassigned)', -1]] +  l.translators.map{|t| [t.email.split('@')[0], t.id]}),
 												:class => 'form-control',
 												'ng-model' => "assignments[[#{@resource.id},#{l.id}]]",
 												'ng-change' => "reassign(#{@resource.id}, #{l.id})",
